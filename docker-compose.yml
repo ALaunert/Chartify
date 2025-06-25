@@ -1,0 +1,48 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    image: my-frontend
+    ports:
+      - "5173:5173"
+    networks:
+      - network
+    volumes:
+      - ./frontend:/app
+    command: npm run dev -- --host
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: my-backend
+    ports:
+      - "8000:8000"
+    networks:
+      - network
+    volumes:
+      - ./backend:/app
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+  nginx:
+    build:
+      context: ./nginx
+    image: my-nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - network
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+networks:
+  network:
