@@ -12,4 +12,4 @@ RUN uv pip install --system --no-deps --requirement uv.lock
 COPY . .
 
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
