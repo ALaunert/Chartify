@@ -20,4 +20,8 @@ def read_root():
 async def read_root():
     token = await spotify_token_manager.get_token()
 
-    return token
+    async with httpx.AsyncClient() as client:
+        client.headers["Authorization"] = f"Bearer {token}"
+        response = await client.get('https://api.spotify.com/v1/artists/3YQKmKGau1PzlVlkL1iodx')
+
+    return response.json()
