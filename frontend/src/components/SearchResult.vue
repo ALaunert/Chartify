@@ -1,10 +1,11 @@
 <script setup lang="ts">
 defineProps(['image','title'])
+const defaultImage = '/Spotify_Logo.png';
 </script>
 
 <template>
   <div class="search-result">
-    <img :src="image" class="cover" alt="noimg">
+    <img :src="image ? image : defaultImage" class="cover" alt="noimg">
     <div class="title">
       {{title}}
     </div>
@@ -17,6 +18,7 @@ defineProps(['image','title'])
   align-content: center;
   background-color: #747bff;
   margin: 8px;
+  gap: 8px;
 }
 
 .cover {
