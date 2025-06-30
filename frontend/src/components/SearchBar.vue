@@ -1,14 +1,34 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import SearchResultsContainer from "./SearchResultsContainer.vue"
 
 const query = ref("")
-const results = ref([])
+const results = ref<any[]>([])
+const wrapperRef = ref<HTMLElement | null>(null)
+
+const resetResults = () =>
+{
+  results.value = [];
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (wrapperRef.value && !wrapperRef.value.contains(event.target as Node)) {
+    resetResults()
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside)
+})
 
 const getSearchData = async (search: string) => {
   if (!search)
   {
-    results.value = []
+    resetResults()
 
     return;
   }
@@ -23,7 +43,7 @@ const getSearchData = async (search: string) => {
   }
   catch (error) {
     console.error(error)
-    results.value = []
+    resetResults()
   }
 }
 
@@ -58,12 +78,16 @@ const onKeyUp = (e: KeyboardEvent) => {
 </script>
 
 <template>
-  <form @submit="onSubmit" id="search-bar-form">
-    <input  @keyup="onKeyUp" type="text" v-model="query" name="searchbar" id="search_bar" placeholder="Enter your artist"/>
-    <button type="submit" name="search">Find</button>
-  </form>
+  <div class="search-wrapper" ref="wrapperRef">
+    <form @submit="onSubmit" id="search-bar-form">
+      <input @keyup="onKeyUp" type="text" v-model="query" name="searchbar" id="search_bar" placeholder="Enter your artist"/>
+      <button type="submit" name="search">Find</button>
+    </form>
 
-  <SearchResultsContainer v-if="results" :results="results" />
+    <div class="results-absolute-wrapper">
+      <SearchResultsContainer v-if="results.length" :results="results" @result-selected="resetResults"/>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -77,4 +101,16 @@ const onKeyUp = (e: KeyboardEvent) => {
 #search_bar{
   padding-left: 8px;
 }
+.search-wrapper {
+  position: relative;
+}
+
+.results-absolute-wrapper {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
 </style>
