@@ -1,10 +1,18 @@
 <script setup lang="ts">
-defineProps(['image','title'])
+import { useRouter } from 'vue-router'
+const props = defineProps(['image', 'title', 'id'])
+const emit = defineEmits(['selected'])
 const defaultImage = '/Spotify_Logo.png';
+const router = useRouter()
+
+const openArtist = () => {
+  emit('selected');
+  router.push({ name: 'artist', params: { id: props.id } })
+}
 </script>
 
 <template>
-  <div class="search-result">
+  <div @click="openArtist" class="search-result">
     <img :src="image ? image : defaultImage" class="cover" alt="noimg">
     <div class="title">
       {{title}}
